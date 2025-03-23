@@ -2,6 +2,7 @@
 using EVDataApi.Interfaces;
 using EVDataApi.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Metrics;
 
 namespace EVDataApi.Services
 {
@@ -30,54 +31,79 @@ namespace EVDataApi.Services
             //         se
             //         )
 
-            var q = _context.Electric_Vehicle_Population_Data.AsQueryable();
+            var query = _context.Electric_Vehicle_Population_Data.AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(model))
-            {
-                q = q.Where(p => p.Model == model);
-            }
-
-            if (!string.IsNullOrWhiteSpace(make))
-            {
-                q = q.Where(p => p.Make == make);
-            }
-
-            if (!string.IsNullOrWhiteSpace(county))
-            {
-                q = q.Where(p => p.County == county);
-            }
-
-            if (!string.IsNullOrWhiteSpace(city))
-            {
-                q = q.Where(p => p.City == city);
-            }
+            query = ValidateAndFilter(query, county, city, null, make, model);
 
             int x;
             if (int.TryParse(initialModelYear.ToString(), out x) && x > 0)
             {
-                q = q.Where(p => p.ModelYear >= initialModelYear);
+                query = query.Where(p => p.ModelYear >= initialModelYear);
             }
 
             if (int.TryParse(endModelYear.ToString(), out x) && x > 0)
             {
-                q = q.Where(p => p.ModelYear <= endModelYear);
+                query = query.Where(p => p.ModelYear <= endModelYear);
             }
 
-            return await q.ToListAsync();
+            return await query.ToListAsync();
+        }
+
+        public async Task<PaginationModel<EVDataModel>> GetFilteredReportingData(string county, string city, string state, string make, string model, int page, int objectsPerPage)
+        {
+            IQueryable<EVDataModel> queryElectricVehicle = _context.Electric_Vehicle_Population_Data;
+
+            queryElectricVehicle = ValidateAndFilter(queryElectricVehicle, county, city, state, make, model);
+
+            var paginatedData = PaginationModel<EVDataModel>.GetPagination(queryElectricVehicle, page, objectsPerPage);
+
+            return paginatedData;
         }
 
         public async Task<PaginationModel<EVDataModel>> GetPaginatedData(int page, int objectsPerPage)
         {
             IQueryable<EVDataModel> queryElectricVehicle = _context.Electric_Vehicle_Population_Data;
 
-            var p = PaginationModel<EVDataModel>.getPagination(queryElectricVehicle, page, objectsPerPage);
+            var paginatedData = PaginationModel<EVDataModel>.GetPagination(queryElectricVehicle, page, objectsPerPage);
 
-            return p;
+            return paginatedData;
         }
 
         public ICollection<EVDataModel> GetRecordByDOLVehicleID(int DOLVehicleID)
         {
             return _context.Electric_Vehicle_Population_Data.Where(p => p.DOLVehicleID == DOLVehicleID).ToList();
+        }
+
+        private IQueryable<EVDataModel> ValidateAndFilter(IQueryable<EVDataModel> query, string county, string city, string state, string make, string model)
+        {
+            //var queryElectricVehicle = query;
+
+            if (!string.IsNullOrWhiteSpace(county))
+            {
+                query = query.Where(ev => ev.County == county);
+            }
+
+            if (!string.IsNullOrWhiteSpace(city))
+            {
+                query = query.Where(ev => ev.City == city);
+            }
+
+            if (!string.IsNullOrWhiteSpace(model))
+            {
+                query = query.Where(ev => ev.Model == model);
+            }
+
+            if (!string.IsNullOrWhiteSpace(state))
+            {
+                query = query.Where(ev => ev.State == state);
+            }
+
+            if (!string.IsNullOrWhiteSpace(make))
+            {
+                query = query.Where(ev => ev.Make == make);
+            }
+
+            return query;
         }
     }
 }
