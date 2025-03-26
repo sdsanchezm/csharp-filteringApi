@@ -10,6 +10,7 @@ namespace EVDataApi.Interfaces
         Task<PaginationModel<EVDataModel>> GetPaginatedData(int page, int objectsPerPage);
 
         Task<PaginationModel<EVDataModel>> GetFilteredReportingData(string county, string city, string state, string make, string model, int page, int objectsPerPage);
+        Task<PaginationModel<EVDataModel>> GetFilteredReportingData(BodyRequestDto data, int page, int objectsPerPage);
 
     }
 }

@@ -9,7 +9,7 @@ namespace EVDataApi.Models
         public int NumberOfPages { get; set; }
         public IList<T> Results { get; set; }
 
-        public static PaginationModel<T> GetPagination(IQueryable<T> iq, int pageNumber, int objectsPerPage)
+        public static async Task<PaginationModel<T>> GetPagination(IQueryable<T> iq, int pageNumber, int objectsPerPage)
         {
             if (pageNumber < 0) pageNumber = 1;
             if (objectsPerPage < 0) pageNumber = 10;
@@ -21,7 +21,7 @@ namespace EVDataApi.Models
 
             paginationResult.Count = totalObjects;
             paginationResult.NumberOfPages = (int)Math.Ceiling(((decimal)totalObjects / (decimal)objectsPerPage));
-            paginationResult.Results = iq.Skip(elementsToSkip).Take(objectsPerPage).ToList();
+            paginationResult.Results = await iq.Skip(elementsToSkip).Take(objectsPerPage).ToListAsync();
 
             return paginationResult;
         }

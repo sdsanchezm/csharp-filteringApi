@@ -57,7 +57,18 @@ namespace EVDataApi.Services
 
             var paginatedData = PaginationModel<EVDataModel>.GetPagination(queryElectricVehicle, page, objectsPerPage);
 
-            return paginatedData;
+            return await paginatedData;
+        }
+
+        public async Task<PaginationModel<EVDataModel>> GetFilteredReportingData(BodyRequestDto data, int page, int objectsPerPage)
+        {
+            IQueryable<EVDataModel> queryElectricVehicle = _context.Electric_Vehicle_Population_Data;
+
+            queryElectricVehicle = ValidateAndFilter(queryElectricVehicle, data.County, data.City, data.State, data.Make, data.Model);
+
+            var paginatedData = PaginationModel<EVDataModel>.GetPagination(queryElectricVehicle, page, objectsPerPage);
+
+            return await paginatedData;
         }
 
         public async Task<PaginationModel<EVDataModel>> GetPaginatedData(int page, int objectsPerPage)
@@ -66,7 +77,7 @@ namespace EVDataApi.Services
 
             var paginatedData = PaginationModel<EVDataModel>.GetPagination(queryElectricVehicle, page, objectsPerPage);
 
-            return paginatedData;
+            return await paginatedData;
         }
 
         public ICollection<EVDataModel> GetRecordByDOLVehicleID(int DOLVehicleID)

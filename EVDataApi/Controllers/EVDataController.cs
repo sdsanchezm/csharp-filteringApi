@@ -47,10 +47,18 @@ namespace EVDataApi.Controllers
             return Ok(c);
         }
 
-        [HttpGet("reportdata")]
-        public async Task<ActionResult<EVDataModel>> GetFilteredReportingData(string? county, string? city, string? state, string? make, string? model, int page = 1, int objectsPerPage = 10)
+        [HttpGet("reportdataget")]
+        public async Task<ActionResult<EVDataModel>> GetFilteredReportingDataGet(string? county, string? city, string? state, string? make, string? model, int page = 1, int objectsPerPage = 10)
         {
             var c = await _evDataService.GetFilteredReportingData(county, city, state, make, model, page, objectsPerPage);
+            return Ok(c);
+        }
+
+        [HttpPost("reportdatapost")]
+        public async Task<ActionResult<EVDataModel>> GetFilteredReportingDataPost([FromBody] BodyRequestDto data, int page = 1, int objectsPerPage = 10)
+        {
+
+            var c = await _evDataService.GetFilteredReportingData(data, page, objectsPerPage);
             return Ok(c);
         }
     }
