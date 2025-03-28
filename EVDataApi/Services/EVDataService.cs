@@ -60,7 +60,7 @@ namespace EVDataApi.Services
             return await paginatedData;
         }
 
-        public async Task<PaginationModel<EVDataModel>> GetFilteredReportingData(BodyRequestDto data, int page, int objectsPerPage)
+        public async Task<PaginationModel<EVDataModel>> GetFilteredReportingData(ReportRequest data, int page, int objectsPerPage)
         {
             IQueryable<EVDataModel> queryElectricVehicle = _context.Electric_Vehicle_Population_Data;
 

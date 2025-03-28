@@ -1,3 +1,4 @@
+using EVDataApi.Helpers;
 using EVDataApi.Interfaces;
 using EVDataApi.Models;
 using EVDataApi.Services;
@@ -55,7 +56,8 @@ namespace EVDataApi.Controllers
         }
 
         [HttpPost("reportdatapost")]
-        public async Task<ActionResult<EVDataModel>> GetFilteredReportingDataPost([FromBody] BodyRequestDto data, int page = 1, int objectsPerPage = 10)
+        [EVModelActionFilter]
+        public async Task<ActionResult<EVDataModel>> GetFilteredReportingDataPost([FromBody] ReportRequest data, int page = 1, int objectsPerPage = 10)
         {
 
             var c = await _evDataService.GetFilteredReportingData(data, page, objectsPerPage);

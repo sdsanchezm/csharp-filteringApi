@@ -2,7 +2,7 @@
 
 namespace EVDataApi.Models
 {
-    public class BodyRequestDto
+    public class ReportRequest
     {
         [Column("County")]
         public string? County { get; set; }
